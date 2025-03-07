@@ -18,6 +18,7 @@ def create_admin():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
+        # db.drop_all()
         create_admin()
     logger.info("App is running")
     app.run()
