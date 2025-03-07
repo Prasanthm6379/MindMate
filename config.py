@@ -1,3 +1,4 @@
+import logging
 from flask_sqlalchemy import SQLAlchemy
 import os
 from datetime import timedelta
@@ -10,7 +11,7 @@ load_dotenv()
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY')
 
-    SQLALCHEMY_DATABASE_URI = f"{os.getenv('SQLALCHEMY_DATABASE_URI')}"
+    SQLALCHEMY_DATABASE_URI = f"{os.getenv('SQLALCHEMY_DATABASE_URI','postgresql://postgres:postgres@localhost:5432/mindmate')}"
     SQLALCHEMY_TRACK_MODIFICATIONS = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS', True)
 
     JWT_SECRET_KEY = os.getenv('SECRET_KEY')
@@ -27,3 +28,11 @@ class Config:
 
 
 db = SQLAlchemy()
+
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("MindMate")
+formatter = logging.Formatter('[%(levelname)s] [%(name)s] [%(asctime)s] %(message)s',datefmt='%Y-%m-%d %I:%M:%S %p')
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
