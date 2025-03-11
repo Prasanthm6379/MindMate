@@ -1,8 +1,8 @@
 from flask import Blueprint, request
-from user.service import create_user, delete_one_caregiver, delete_one_user, get_all_caregivers_by_id, get_one_caregiver_by_id, get_one_user_by_email, login, create_memory_note, get_all_memory_notes, get_one_memory_note_by_id, delete_one_memory_note, add_caregiver, update_caregiver, update_memory_note, update_user
+from user.service import add_remainder, create_user, delete_one_caregiver, delete_one_user, edit_remainder, get_all_caregivers_by_id, get_all_remainders, get_all_remainders_by_id, get_one_caregiver_by_id, get_one_remainder, get_one_user_by_email, login, create_memory_note, get_all_memory_notes, get_one_memory_note_by_id, delete_one_memory_note, add_caregiver, update_caregiver, update_memory_note, update_user
 from helper import success_response,failure_response, tokengen
 from flask_jwt_extended import jwt_required
-
+from config import logger
 
 user  = Blueprint('user', __name__, url_prefix='/user')
 
@@ -27,9 +27,12 @@ def register_user():
             password = payload.get('password')
             user = create_user(email,username,password)
             if user['status'] == 'success':
+                logger.info("User registered Successfully")
                 return success_response(data=user['data'])
+            logger.error(user['error'])
             return failure_response(data=user['error'])
         except Exception as e:
+            logger.error(str(e))
             return failure_response(data=str(e),status_code=500)
         
 
@@ -40,9 +43,12 @@ def update_one_user():
         payload = request.get_json()
         user = update_user(email = payload.get('email').lower(),username = payload.get('username'),password = payload.get('password'),id = payload.get('id'))
         if user['status'] == 'success':
+            logger.info(user['data'])
             return success_response(data=user['data'])
+        logger.error(user['error'])
         return failure_response(data=user['error'],status_code=user['status_code'])
     except Exception as e:
+        logger.error(str(e))
         return failure_response(data=str(e),status_code=500)
 
 
@@ -52,9 +58,12 @@ def delete_user(email):
     try:
         user = delete_one_user(email)
         if user['status'] == 'success':
+            logger.info(user['data'])
             return success_response(data=user['data'])
+        logger.error(user['error'])
         return failure_response(data=user['error'],status_code=user['status_code'])
     except Exception as e:
+        logger.error(str(e))
         return failure_response(data=str(e),status_code=500)
     
 
@@ -68,9 +77,12 @@ def login_user():
         if user['status'] == 'success':
             token_ = tokengen(email)
             # print(token_)
+            logger.info(user['data']['message'])
             return success_response(data={"message":user['data'],"token":token_})
+        logger.error(user['error'])
         return failure_response(data=user['error'],status_code=user['status_code'])
     except Exception as e:
+        logger.error(str(e))
         return failure_response(data=str(e),status_code=500)
     
 
@@ -81,7 +93,9 @@ def memory_note(id):
     if request.method == 'GET':
         note = get_all_memory_notes(id)
         if note['status'] == 'success':
+            logger.info("Note retrived Successfully")
             return success_response(data=note['data'])
+        logger.error(note['error'])
         return failure_response(data=note['error'],status_code=404)
     elif request.method == 'POST':
         try:
@@ -97,17 +111,25 @@ def memory_note(id):
                 content = request.form['content']
                 note = create_memory_note(id,note_type,content,title)
             if note['status'] == 'success':
+                logger.info('Note created successfully')
                 return success_response(data="Note created successfully")
+            logger.error(note['error'])
             return failure_response(data = note['error'],status_code=400)
         except Exception as e:
+            logger.error(str(e))
             return failure_response(data=str(e),status_code=500)
     elif request.method == 'PUT':
-        payload = request.get_json()
-        note = update_memory_note(user_id = payload.get('user_id'),id = payload.get('id'),title = payload.get('title'),note_type = payload.get('note_type'),content = payload.get('content'))
-        if note['status'] == 'success':
-            return success_response(data=note['data'])
-        return failure_response(data=note['error'],status_code=note['status_code'])
-
+        try:
+            payload = request.get_json()
+            note = update_memory_note(user_id = payload.get('user_id'),id = payload.get('id'),title = payload.get('title'),note_type = payload.get('note_type'),content = payload.get('content'))
+            if note['status'] == 'success':
+                logger.info(note['data'])
+                return success_response(data=note['data'])
+            logger.error(note['error'])
+            return failure_response(data=note['error'],status_code=note['status_code'])
+        except Exception as e:
+            logger.error(str(e))
+            return failure_response(data = str(e),status_code=500)
 
 @user.route('/memoryNote/<user_id>/<id>',methods=['GET', 'DELETE'])
 @jwt_required()
@@ -169,3 +191,33 @@ def one_caregiver(user_id,id):
             return success_response(data=caregiver['data'])
         return failure_response(data=caregiver['error'],status_code=caregiver['status_code'])
 
+
+@user.route('/remainder',methods = ['POST','GET','PUT'])
+@jwt_required()
+def remainder():
+    try:
+        if request.method == 'POST':
+            payload = request.get_json()
+            rem = add_remainder(id = payload.get('user_id'),title = payload.get('title'),description = payload.get('description'),reminder_time = payload.get('reminder_time'),repeat_interval = payload.get('repeat_interval'),reminder_type = payload.get('reminder_type'),status = payload.get('status'))
+            if rem['status'] == 'success':
+                logger.info(rem['data'])
+                return success_response(data=rem['data'])
+            logger.error(rem['error'])
+            return failure_response(data=rem['error'],status_code=rem['status_code'])
+        elif request.method == 'GET':
+            user_id = request.get_json().get('user_id')
+            remainders = get_all_remainders_by_id(user_id)
+            if remainders['status'] == 'success':
+                logger.info("Remainders retrived successfully")
+                return success_response(data=remainders)
+            logger.error(remainders['error'])
+            return failure_response(data=remainders['error'],status_code=remainders['status_code'])
+        elif request.method == 'PUT':
+            payload = request.get_json()
+            rem = edit_remainder(id = payload.get('remainder_id'),title = payload.get('title'),description = payload.get('description'),remainder_time = payload.get('reminder_time'),repeat_interval = payload.get('repeat_interval'),remainder_type = payload.get('reminder_type'),status = payload.get('status'))
+            if rem['status'] == 'success':
+                return success_response(data=rem['data'])
+            return failure_response(data=rem['error'],status_code=rem['status_code'])
+    except Exception as e:
+        logger.error(str(e))
+        return failure_response(data=str(e),status_code=500)

@@ -1,7 +1,10 @@
+from datetime import datetime, timedelta
+import smtplib
+from flask_mail import  Message
 import uuid
 from helper import check_password, encrypt_password
-from models import User, MemoryNote, Caregiver
-from config import db, s3_client, BUCKET
+from models import User, MemoryNote, Caregiver, Reminder
+from config import db, s3_client, BUCKET, MAIL_PASSWORD, MAIL_USERNAME
 from werkzeug.exceptions import HTTPException
 from botocore.exceptions import ClientError
 import os
@@ -81,6 +84,14 @@ class InvalidNoteTypeException(HTTPException):
 class CaregiverNotFoundException(HTTPException):
     code = 404
     description = "Caregiver not found"
+    def __init__(self, description = None, response = None):
+        if not description:
+            description = self.description
+        super().__init__(description, response)
+
+class RemainderNotFoundException(HTTPException):
+    code = 404
+    description = "Remainder Not Found"
     def __init__(self, description = None, response = None):
         if not description:
             description = self.description
@@ -410,3 +421,123 @@ def update_caregiver(id,user_id,name,phone,email,relationship,emergency_contact)
         return {"status":"failed","error":str(e)}
 
 
+def add_remainder(id,title,description,reminder_time,repeat_interval,reminder_type,status):
+    try:
+        user = get_one_user_by_id(id)
+        if user['status'] == 'failed':
+            raise InvalidUserIdException()
+        remainder = Reminder(user_id=id,title = title,description=description,reminder_time=reminder_time,repeat_interval=repeat_interval,reminder_type=reminder_type,status=status)
+        db.session.add(remainder)
+        db.session.commit()
+        return {"status":"success","data":"Remainder added successfully"}
+    except InvalidUserIdException as e:
+        return {"status":"failed","error":str(e),"status_code":e.code}
+    except Exception as e:
+        return {"status":"failed","error":str(e)}
+
+
+def get_all_remainders():
+    try:
+        now = datetime.utcnow()
+        rem = Reminder.query.filter(Reminder.reminder_time <= now, Reminder.status == False).all()
+        data = []
+        for reminder in rem:
+            data.append({"id":reminder.id,"user_id":reminder.user_id,"title":reminder.title,"description":reminder.description,"reminder_time":reminder.reminder_time,"repeat_interval":reminder.repeat_interval,"reminder_type":reminder.reminder_type,"status":reminder.status})
+        return {"status":"success","data":rem}
+    except Exception as e:
+        return {"status":"failed","error":str(e)}
+
+
+def get_all_remainders_by_id(id):
+    try:
+        remainders = Reminder.query.filter_by(user_id=id).all()
+        data = []
+        for rem in remainders:
+            data.append({"id":rem.id,"user_id":rem.user_id,"title":rem.title,"description":rem.description,"reminder_time":rem.reminder_time,"repeat_interval":rem.repeat_interval,"reminder_type":rem.reminder_type,"status":rem.status})
+        return {"status":"success","data":data}
+    except Exception as e:
+        return {"status":"failed","error":str(e)}
+
+
+def get_one_remainder(id):
+    try:
+        remainder = Reminder.query.filter_by(id=id).all()
+        if remainder:
+            return {"status":"success","data":remainder}
+        raise RemainderNotFoundException()
+    except RemainderNotFoundException as e:
+        return {"status":"failed","error":str(e),"status_code":e.code}
+    except Exception as e:
+        return {"status":"failed","error":str(e)}
+    
+
+def edit_remainder(id,remainder_type,status,title,description,remainder_time,repeat_interval):
+    try:
+        remainder = Reminder.query.filter_by(id = id).all()
+        if not remainder:
+            raise RemainderNotFoundException()
+        remainder = remainder[0]
+        remainder.reminder_type = remainder_type
+        remainder.status = status
+        remainder.title = title
+        remainder.description = description
+        remainder.reminder_time = remainder_time
+        remainder.repeat_interval = repeat_interval
+        db.session.commit()
+        print('remainder updated    ')
+        return {"status":"success","data":"Remainder updated successfully"}
+    except RemainderNotFoundException as e:
+        return {"status":"failed","error":str(e),'status_code':e.code}
+    except Exception as e:
+        return {"status":"failed","error":str(e),'status_code':500}
+        
+
+def send_email_notification(user_email, title, description):
+    try:        
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(MAIL_USERNAME, MAIL_PASSWORD)
+        
+        message = f"Subject: Reminder - {title}\n\n{description}"
+        server.sendmail(MAIL_USERNAME, user_email, message)
+        server.quit()
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+
+
+def send_remainder():
+    now = datetime.utcnow()
+    reminders = Reminder.query.filter(Reminder.reminder_time <= now, Reminder.status == False).all()
+    for reminder in reminders:
+        user = get_one_user_by_id(reminder.user_id)
+        if not user:
+            raise UserNotFoundException()
+        user_email = user['data']['email']  
+        send_email_notification(user_email=user_email, title=reminder.title, description=reminder.description)
+        reminder.status = True
+        db.session.commit()
+        if reminder.repeat_interval:
+            if reminder.repeat_interval == "daily":
+                next_time = reminder.reminder_time + timedelta(days=1)
+            elif reminder.repeat_interval == "weekly":
+                next_time = reminder.reminder_time + timedelta(weeks=1)
+            elif reminder.repeat_interval == "monthly":
+                next_time = reminder.reminder_time + timedelta(weeks=4)
+            else:
+                next_time = None
+
+            if next_time:
+                new_reminder = Reminder(
+                    user_id=reminder.user_id,
+                    reminder_type=reminder.reminder_type,
+                    status=False,
+                    title=reminder.title,
+                    description=reminder.description,
+                    reminder_time=next_time,
+                    repeat_interval=reminder.repeat_interval
+                )
+                db.session.add(new_reminder)
+                db.session.commit()
+    
+    db.session.commit()
+    return "Reminders checked and triggered."

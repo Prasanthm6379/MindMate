@@ -11,9 +11,19 @@ load_dotenv()
 
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY')
-
+    CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+    RESULT_BACKEND = os.getenv('RESULT_BACKEND')
     SQLALCHEMY_DATABASE_URI = f"{os.getenv('SQLALCHEMY_DATABASE_URI','postgresql://postgres:postgres@localhost:5432/mindmate')}"
     SQLALCHEMY_TRACK_MODIFICATIONS = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS', True)
+    
+    MAIL_SERVER = os.getenv('MAIL_SERVER')
+    MAIL_PORT = os.getenv('MAIL_PORT')
+    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS')
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+    MAIL_USE_SSL = os.getenv('MAIL_USE_SSL')
+    MAIL_DEBUG = os.getenv('MAIL_DEBUG')
+
 
     JWT_SECRET_KEY = os.getenv('SECRET_KEY')
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=int(os.getenv('JWT_TOKEN_TIME_OUT_IN_MINUTES', 25)))
@@ -26,6 +36,9 @@ class Config:
     LOAD_DOTENV = os.getenv('LOAD_DOTENV')
     USE_RELOADER = os.getenv('USE_RELOADER')
     ALLOW_UNSAFE_WERKZEUG = os.getenv('ALLOW_UNSAFE_WERKZEUG')
+
+MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
 
 
 AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_ID')
