@@ -1,8 +1,31 @@
+import uuid
 from helper import check_password, encrypt_password
 from models import User, MemoryNote, Caregiver
-from config import db
+from config import db, s3_client, BUCKET
 from werkzeug.exceptions import HTTPException
+from botocore.exceptions import ClientError
+import os
+import sys
+import threading
 
+
+class ProgressPercentage(object):
+
+    def __init__(self, filename):
+        self._filename = filename
+        self._size = float(os.path.getsize(filename))
+        self._seen_so_far = 0
+        self._lock = threading.Lock()
+
+    def __call__(self, bytes_amount):
+        with self._lock:
+            self._seen_so_far += bytes_amount
+            percentage = (self._seen_so_far / self._size) * 100
+            sys.stdout.write(
+                "\r%s  %s / %s  (%.2f%%)" % (
+                    self._filename, self._seen_so_far, self._size,
+                    percentage))
+            sys.stdout.flush()
 class DupicateResourceException(HTTPException):
     code = 409
     description = "Resource already exist"
@@ -193,20 +216,26 @@ def get_one_user_by_id(id):
 
 
 
-def create_memory_note(id,note_type,content,title):
+def create_memory_note(id,note_type,content,title,file_path = None):
     try:
         user = get_one_user_by_id(id)
-        print( user)
         if user['status'] == 'failed':
             raise InvalidUserIdException()
         
-        if note_type not in ['note','reminder','todo']:
+        if note_type not in ['note','reminder','todo','img','video']:
             raise InvalidNoteTypeException()
-        
+        if note_type in ['img','video']:
+            unique_id = uuid.uuid4().hex
+            S3_OBJECT_NAME = f"uploads/{unique_id}_{file_path.split('/')[-1]}"
+            s3_client.upload_file(file_path, BUCKET, S3_OBJECT_NAME,ExtraArgs={'ACL': 'public-read'},Callback=ProgressPercentage(file_path))
+            content = S3_OBJECT_NAME
+            print(content)
         mem = MemoryNote(user_id=id,note_type=note_type,content=content,title=title)
         db.session.add(mem)
         db.session.commit()
         return {"status":"success","data":"Note created successfully"}
+    except ClientError as e:
+        return {"status":"failed","error":str(e)}
     except InvalidNoteTypeException as e:
         return {"status":"failed","error":str(e)}
     except InvalidUserIdException as e:
@@ -238,6 +267,7 @@ def update_memory_note(id,user_id,note_type,content,title):
 
 
 
+
 def get_all_memory_notes(id):
     try:
         user = get_one_user_by_id(id)
@@ -246,7 +276,10 @@ def get_all_memory_notes(id):
         notes = MemoryNote.query.filter_by(user_id=id).all()
         data = []
         for note in notes:
-            data.append({"id":note.id,"title":note.title,"note_type":note.note_type,"content":note.content})
+            if note.note_type in ['img','video']:
+                data.append({"id":note.id,"title":note.title,"note_type":note.note_type,"content":f"https://{BUCKET}.s3.amazonaws.com/{note.content}","file_name":note.content.split('_')[-1]})
+            else:
+                data.append({"id":note.id,"title":note.title,"note_type":note.note_type,"content":note.content})
         return {"status":"success","data":data}
     except InvalidUserIdException as e:
         return {"status":"failed","error":str(e)}
@@ -259,7 +292,12 @@ def get_one_memory_note_by_id(id,user_id):
     try:
         note = MemoryNote.query.filter_by(id=id,user_id=user_id).first()
         if note:
-            return {"status":"success","data":{ "id":note.id,"title":note.title, "note_type":note.note_type,"content":note.content}}  
+            data = {}
+            if note.note_type in ['img','video']:
+                data = {"id":note.id,"title":note.title,"note_type":note.note_type,"content":f"https://{BUCKET}.s3.amazonaws.com/{note.content}","file_name":note.content.split('_')[-1]}
+            else:
+                data = {"id":note.id,"title":note.title,"note_type":note.note_type,"content":note.content}
+            return {"status":"success","data":data}  
         raise NoteNotFoundException()
     except NoteNotFoundException as e:
         return {"status":"failed","error":str(e),"status_code":e.code}
@@ -297,7 +335,7 @@ def add_caregiver(id,name,phone,email,relationship,emergency_contact):
         return {"status":"failed","error":str(e)}
 
 
-def get_all_caregivers(id):
+def get_all_caregivers_by_id(id):
     try:
         user = get_one_user_by_id(id)
         if user['status'] == 'failed':

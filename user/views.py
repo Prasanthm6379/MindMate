@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from user.service import create_user, delete_one_caregiver, delete_one_user, get_all_caregivers, get_one_caregiver_by_id, get_one_user_by_email, login, create_memory_note, get_all_memory_notes, get_one_memory_note_by_id, delete_one_memory_note, add_caregiver, update_caregiver, update_memory_note, update_user
+from user.service import create_user, delete_one_caregiver, delete_one_user, get_all_caregivers_by_id, get_one_caregiver_by_id, get_one_user_by_email, login, create_memory_note, get_all_memory_notes, get_one_memory_note_by_id, delete_one_memory_note, add_caregiver, update_caregiver, update_memory_note, update_user
 from helper import success_response,failure_response, tokengen
 from flask_jwt_extended import jwt_required
 
@@ -85,11 +85,17 @@ def memory_note(id):
         return failure_response(data=note['error'],status_code=404)
     elif request.method == 'POST':
         try:
-            payload = request.get_json()
-            title = payload.get('title')
-            note_type = payload.get('note_type')
-            content = payload.get('content')
-            note = create_memory_note(id,note_type,content,title)
+            # payload = request.form()
+            title = request.form['title']
+            note_type = request.form['note_type']
+            if note_type in ['img','video']:
+                content = request.files['content']
+                file_path = f'uploads/{content.filename}'
+                content.save(file_path)
+                note = create_memory_note(id,note_type,content,title,file_path = file_path)
+            else:
+                content = request.form['content']
+                note = create_memory_note(id,note_type,content,title)
             if note['status'] == 'success':
                 return success_response(data="Note created successfully")
             return failure_response(data = note['error'],status_code=400)
@@ -130,7 +136,7 @@ def get_memory_note_by_id(user_id,id):
 def caregiver():
     if request.method == 'GET':
         id = request.get_json().get('id')
-        data = get_all_caregivers(id)
+        data = get_all_caregivers_by_id(id)
         if data['status'] == 'failed':
             return failure_response(data=data['error'],status_code=data['status_code'])
         return success_response(data=data['data'])

@@ -1,4 +1,5 @@
 import logging
+import boto3
 from flask_sqlalchemy import SQLAlchemy
 import os
 from datetime import timedelta
@@ -27,7 +28,13 @@ class Config:
     ALLOW_UNSAFE_WERKZEUG = os.getenv('ALLOW_UNSAFE_WERKZEUG')
 
 
+AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY_ID')
+SECRET_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+REGION = os.getenv('AWS_REGION')
+BUCKET = os.getenv('BUCKET')
+
 db = SQLAlchemy()
+s3_client = boto3.client('s3', region_name=REGION)
 
 
 logging.basicConfig(level=logging.INFO)
