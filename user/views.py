@@ -81,7 +81,6 @@ def login_user():
         user = login(email,password)
         if user['status'] == 'success':
             token_ = tokengen(email)
-            # print(token_)
             logger.info(user['data']['message'])
             return success_response(data={"message":user['data'],"token":token_})
         logger.error(user['error'])

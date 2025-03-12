@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 import smtplib
-from flask_mail import  Message
 import uuid
 from helper import check_password, encrypt_password
 from models import ActivityLog, EmergencyAlert, User, MemoryNote, Caregiver, Reminder
@@ -150,7 +149,6 @@ def create_user(email, username, password):
     try:
         password = encrypt_password(password)
         exist = get_one_user_by_email(email)
-        print("test",exist)
         if exist['status'] == 'success':
             if exist['data']['is_active'] == True:
                 raise DupicateResourceException()
@@ -503,7 +501,6 @@ def edit_remainder(id,remainder_type,status,title,description,remainder_time,rep
         remainder.reminder_time = remainder_time
         remainder.repeat_interval = repeat_interval
         db.session.commit()
-        print('remainder updated    ')
         return {"status":"success","data":"Remainder updated successfully"}
     except RemainderNotFoundException as e:
         return {"status":"failed","error":str(e),'status_code':e.code}
