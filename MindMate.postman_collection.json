@@ -1,0 +1,803 @@
+{
+	"info": {
+		"_postman_id": "b78a5881-9243-4f0a-ae6b-6c0cb46976b3",
+		"name": "MindMate",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "32736650"
+	},
+	"item": [
+		{
+			"name": "User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\":\"prasanth123@gmail.com\",\n    \"username\":\"Prasanth123\",\n    \"password\":\"1234\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/"
+			},
+			"response": []
+		},
+		{
+			"name": "User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\":\"ca19a858042f4031b04730a90760e175\",\n    \"email\":\"prasanth123@gmail.com\",\n    \"username\":\"Prasanth123\",\n    \"password\":\"1234\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/"
+			},
+			"response": []
+		},
+		{
+			"name": "User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/prasanth123@gmail.com"
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\":\"prasanthbike@gmail.com\",\n    \"password\":\"1234\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/login"
+			},
+			"response": []
+		},
+		{
+			"name": "Memory Note",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "note_type",
+							"value": "img",
+							"type": "text"
+						},
+						{
+							"key": "content",
+							"type": "file",
+							"src": "/home/divum/PycharmProjects/MindMate/uploads/image.png"
+						},
+						{
+							"key": "title",
+							"value": "image",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://127.0.0.1:5000/user/memoryNote/b95eb5eda9554546ac478864874ce780"
+			},
+			"response": []
+		},
+		{
+			"name": "Memory Note",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\":\"b95eb5eda9554546ac478864874ce780\",\n    \"id\":\"7326c6d15e9a4a06a5eeee7e024750d9\",\n    \"note_type\":\"note\",\n    \"content\":\"asdasdasdasdads\",\n    \"title\":\"tadsdasdest\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/memoryNote/b95eb5eda9554546ac478864874ce780"
+			},
+			"response": []
+		},
+		{
+			"name": "Memory Notes",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"note_type\":\"note\",\n    \"content\":\"testssetsttetetstets\",\n    \"title\":\"test\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/memoryNote/b95eb5eda9554546ac478864874ce780"
+			},
+			"response": []
+		},
+		{
+			"name": "One Memory Note",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"note_type\":\"note\",\n    \"content\":\"testssetsttetetstets\",\n    \"title\":\"test\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/memoryNote/b95eb5eda9554546ac478864874ce780/2f4cc69b0f3842e4993b37f93320dc15"
+			},
+			"response": []
+		},
+		{
+			"name": "One Memory Note",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"note_type\":\"note\",\n    \"content\":\"testssetsttetetstets\",\n    \"title\":\"test\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/memoryNote/b95eb5eda9554546ac478864874ce780/1c7a7286f19547a2b2ada2bd5fff82ba"
+			},
+			"response": []
+		},
+		{
+			"name": "User by Email",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/prasanth@gmail.com"
+			},
+			"response": []
+		},
+		{
+			"name": "Caregiver",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"b95eb5eda9554546ac478864874ce780\",\n    \"name\": \"Prasanth\",\n    \"email\": \"prasanth123@gmail.com\",\n    \"phone\": 7654567654,\n    \"relationship\":\"Father\",\n    \"emergency_contact\":true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/caregiver"
+			},
+			"response": []
+		},
+		{
+			"name": "Emegency Alert",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\": \"b95eb5eda9554546ac478864874ce780\",\n    \"caregiver_id\":\"193f1ab22acd4020a518bc1493fbe6e8\",\n    \"alert_time\":\"2025-03-10T14:00:00\",\n    \"location\":\"BLR\",\n    \"resolved\":false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/emergencyalert"
+			},
+			"response": []
+		},
+		{
+			"name": "Activity Log",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\": \"b95eb5eda9554546ac478864874ce780\",\n    \"activity_time\": \"2025-03-10T14:00:00\",\n    \"activity_type\": \"Excercise\",\n    \"details\": \"100 Push up\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/activitylog"
+			},
+			"response": []
+		},
+		{
+			"name": "Emegency Alert",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\": \"b95eb5eda9554546ac478864874ce780\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/emergencyalert"
+			},
+			"response": []
+		},
+		{
+			"name": "One Emegency Alert",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"5e83c288997c439fbe08b93c262fb05c\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/emergencyalert/5e83c288997c439fbe08b93c262fb05c"
+			},
+			"response": []
+		},
+		{
+			"name": "Activity Log",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\": \"b95eb5eda9554546ac478864874ce780\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/activitylog"
+			},
+			"response": []
+		},
+		{
+			"name": "One Activity Log",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/activitylog/4dca6ebd31fb4436ad9a99ee5822f103"
+			},
+			"response": []
+		},
+		{
+			"name": "Emegency Alert",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"b1fcb6f0465b402aac29f9c472b88c40\",\n    \"caregiver_id\":\"193f1ab22acd4020a518bc1493fbe6e8\",\n    \"alert_time\":\"2025-03-10T14:00:00\",\n    \"location\":\"BLR\",\n    \"resolved\":false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/emergencyalert"
+			},
+			"response": []
+		},
+		{
+			"name": "Activity Log",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"a6c4df52629d417cb8561b8bdc094d46\",\n    \"activity_time\": \"2025-03-10T14:00:00\",\n    \"activity_type\": \"Excercise\",\n    \"details\": \"100 Push up\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/activitylog"
+			},
+			"response": []
+		},
+		{
+			"name": "Emegency Alert",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"b1fcb6f0465b402aac29f9c472b88c40\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/emergencyalert"
+			},
+			"response": []
+		},
+		{
+			"name": "Activity Log",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"a6c4df52629d417cb8561b8bdc094d46\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/activitylog"
+			},
+			"response": []
+		},
+		{
+			"name": "Remainder",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"user_id\": \"b95eb5eda9554546ac478864874ce780\",\n  \"title\": \"Doctor Appointment\",\n  \"description\": \"Visit Dr. John at City Hospital\",\n  \"reminder_time\": \"2025-03-10T14:00:00\",\n  \"repeat_interval\": \"weekly\",\n  \"reminder_type\": \"health\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/remainder"
+			},
+			"response": []
+		},
+		{
+			"name": "Remainder",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"remainder_id\": \"b245c4bf1ea24c1fb52276498e068399\",\n  \"title\": \"Doctor Appointment\",\n  \"description\": \"Visit Dr. John at City Hospital\",\n  \"reminder_time\": \"2025-03-10T14:00:00\",\n  \"repeat_interval\": \"weekly\",\n  \"status\":false,\n  \"reminder_type\": \"health\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/remainder"
+			},
+			"response": []
+		},
+		{
+			"name": "Remainder",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"remainder_id\": \"b245c4bf1ea24c1fb52276498e068399\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/remainder"
+			},
+			"response": []
+		},
+		{
+			"name": "Remainder",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"user_id\": \"b95eb5eda9554546ac478864874ce780\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/remainder"
+			},
+			"response": []
+		},
+		{
+			"name": "One Remainder",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"user_id\": \"b95eb5eda9554546ac478864874ce780\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/remainder"
+			},
+			"response": []
+		},
+		{
+			"name": "Caregiver",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\":\"b95eb5eda9554546ac478864874ce780\",\n    \"id\": \"193f1ab22acd4020a518bc1493fbe6e8\",\n    \"name\": \"Prasanth\",\n    \"email\": \"prasanth123@gmail.com\",\n    \"phone\": 9999999999,\n    \"relationship\":\"Father\",\n    \"emergency_contact\":true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/caregiver"
+			},
+			"response": []
+		},
+		{
+			"name": "Caregiver",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"b95eb5eda9554546ac478864874ce780\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/caregiver"
+			},
+			"response": []
+		},
+		{
+			"name": "One Caregiver",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/caregiver/b95eb5eda9554546ac478864874ce780/193f1ab22acd4020a518bc1493fbe6e8"
+			},
+			"response": []
+		},
+		{
+			"name": "One Caregiver",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/caregiver/b95eb5eda9554546ac478864874ce780/91e81f8479ec4905b1e8a8f7f1ab0d5c"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc0MTY3Mjg2NiwianRpIjoiMWM0MzY5YjEtM2MzMy00ZmY4LTk3NDAtY2I0YTViMmUxZDMxIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6InByYXNhbnRoQGdtYWlsLmNvbSIsIm5iZiI6MTc0MTY3Mjg2NiwiY3NyZiI6Ijg3NmQzYWFiLTI4YzItNGNlNy05NzhkLTI5YmVlZTlhNDMxMCIsImV4cCI6MTc0MTcxNjA2Nn0.CbsUnxrGyLTKwk2UXxYi-7GXCJvUyLVWi238NIC6XTw",
+			"type": "string"
+		}
+	]
+}

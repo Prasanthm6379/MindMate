@@ -2,10 +2,18 @@ from factory import create_app
 from config import db, logger
 from helper import encrypt_password
 from models import User
-
+from user.service import send_remainder
+from flask_apscheduler import APScheduler
 
 app = create_app()
+scheduler = APScheduler()
 db.init_app(app)
+def check_and_trigger_reminders():
+    with app.app_context():
+        logger.info("Checking and triggering reminders")
+        res = send_remainder()
+    return res
+
 
 
 def create_admin():
@@ -14,6 +22,11 @@ def create_admin():
         db.session.add(user)
         db.session.commit()
         logger.info("Admin created successfully")
+
+
+scheduler.add_job(id="reminder_task", func=check_and_trigger_reminders, trigger="interval", seconds=60)
+scheduler.start()
+
 
 if __name__ == '__main__':
     with app.app_context():
