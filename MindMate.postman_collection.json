@@ -642,6 +642,33 @@
 			"response": []
 		},
 		{
+			"name": "One Remainder",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{token}}"
+					}
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"user_id\": \"b95eb5eda9554546ac478864874ce780\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/user/remainder"
+			},
+			"response": []
+		},
+		{
 			"name": "Caregiver",
 			"request": {
 				"auth": {
