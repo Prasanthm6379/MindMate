@@ -4,7 +4,7 @@ from flask_mail import  Message
 import uuid
 from helper import check_password, encrypt_password
 from models import User, MemoryNote, Caregiver, Reminder
-from config import db, s3_client, BUCKET, MAIL_PASSWORD, MAIL_USERNAME
+from config import db, s3_client, BUCKET, MAIL_PASSWORD, MAIL_USERNAME, MAIL_PORT, MAIL_SERVER
 from werkzeug.exceptions import HTTPException
 from botocore.exceptions import ClientError
 import os
@@ -226,21 +226,21 @@ def get_one_user_by_id(id):
         return {"status":"failed","error":str(e)}
 
 
+def upload_file_s3(file_path):
+    unique_id = uuid.uuid4().hex
+    s3_object_name = f"uploads/{unique_id}_{file_path.split('/')[-1]}"
+    s3_client.upload_file(file_path, BUCKET, s3_object_name,ExtraArgs={'ACL': 'public-read'},Callback=ProgressPercentage(file_path))
+    return s3_object_name
 
 def create_memory_note(id,note_type,content,title,file_path = None):
     try:
         user = get_one_user_by_id(id)
         if user['status'] == 'failed':
-            raise InvalidUserIdException()
-        
+            raise InvalidUserIdException() 
         if note_type not in ['note','reminder','todo','img','video']:
             raise InvalidNoteTypeException()
         if note_type in ['img','video']:
-            unique_id = uuid.uuid4().hex
-            S3_OBJECT_NAME = f"uploads/{unique_id}_{file_path.split('/')[-1]}"
-            s3_client.upload_file(file_path, BUCKET, S3_OBJECT_NAME,ExtraArgs={'ACL': 'public-read'},Callback=ProgressPercentage(file_path))
-            content = S3_OBJECT_NAME
-            print(content)
+            content = upload_file_s3(file_path)
         mem = MemoryNote(user_id=id,note_type=note_type,content=content,title=title)
         db.session.add(mem)
         db.session.commit()
@@ -494,7 +494,7 @@ def edit_remainder(id,remainder_type,status,title,description,remainder_time,rep
 
 def send_email_notification(user_email, title, description):
     try:        
-        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server = smtplib.SMTP(MAIL_SERVER, MAIL_PORT)
         server.starttls()
         server.login(MAIL_USERNAME, MAIL_PASSWORD)
         
