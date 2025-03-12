@@ -478,9 +478,9 @@ def get_all_remainders_by_id(id):
 
 def get_one_remainder(id):
     try:
-        remainder = Reminder.query.filter_by(id=id).all()
+        remainder = Reminder.query.filter_by(id=id).all()[0]
         if remainder:
-            return {"status":"success","data":remainder}
+            return {"status":"success","data":{"id":remainder.id,"user_id":remainder.user_id,"title":remainder.title,"description":remainder.description,"reminder_time":remainder.reminder_time,"repeat_interval":remainder.repeat_interval,"reminder_type":remainder.reminder_type,"status":remainder.status}}
         raise RemainderNotFoundException()
     except RemainderNotFoundException as e:
         return {"status":"failed","error":str(e),"status_code":e.code}

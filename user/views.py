@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from user.service import (add_remainder, create_user, delete_one_caregiver, delete_one_remainder, delete_one_user, edit_remainder, 
-                          get_all_caregivers_by_id, get_all_remainders, get_all_remainders_by_id, get_one_caregiver_by_id, get_one_remainder, 
+                          get_all_caregivers_by_id, get_all_remainders_by_id, get_one_caregiver_by_id, get_one_remainder, 
                           get_one_user_by_email, login, create_memory_note, get_all_memory_notes, get_one_memory_note_by_id, delete_one_memory_note,
                             add_caregiver, update_caregiver, update_memory_note, update_user, get_all_EmergencyAlert_by_id, get_one_EmergencyAlert,
                               delete_one_EmergencyAlert, add_EmergencyAlert, edit_EmergencyAlert,edit_ActivityLog,get_all_ActivityLog_by_id, add_ActivityLog,
@@ -231,6 +231,18 @@ def remainder():
             return failure_response(data=rem['error'],status_code=rem['status_code'])
     except Exception as e:
         logger.error(str(e))
+        return failure_response(data=str(e),status_code=500)
+
+
+@user.route('/remainder/<id>',methods=['GET'])
+@jwt_required()
+def one_remainder(id):
+    try:
+        remainder = get_one_remainder(id)
+        if remainder['status'] == 'success':
+            return success_response(data=remainder['data'])
+        return failure_response(data=remainder['error'],status_code=remainder['status_code'])
+    except Exception as e:
         return failure_response(data=str(e),status_code=500)
 
 
