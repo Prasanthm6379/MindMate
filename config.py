@@ -54,7 +54,7 @@ s3_client = boto3.client('s3', region_name=REGION)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("MindMate")
-formatter = logging.Formatter('[%(levelname)s] [%(name)s] [%(asctime)s] %(message)s',datefmt='%Y-%m-%d %I:%M:%S %p')
+formatter = logging.Formatter('%(levelname)s.%(name)s.%(asctime)s: %(message)s',datefmt='%Y-%m-%d %I:%M:%S %p')
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)

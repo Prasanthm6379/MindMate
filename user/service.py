@@ -134,7 +134,7 @@ def get_one_user_by_username(username):
     try:
         user = User.query.filter_by(username = username).first()
         if user:
-            return {"status":"success","data":{ "id":user.id,"email":user.email, "username":user.username,"role":user.role}}  
+            return {"status":"success","data":{ "id":user.id,"email":user.email, "username":user.username,"role":user.role, "is_active":user.is_active}}  
         else:
             raise UserNotFoundException()
     except UserNotFoundException as e:
@@ -150,6 +150,7 @@ def create_user(email, username, password):
     try:
         password = encrypt_password(password)
         exist = get_one_user_by_email(email)
+        print("test",exist)
         if exist['status'] == 'success':
             if exist['data']['is_active'] == True:
                 raise DupicateResourceException()
@@ -162,7 +163,7 @@ def create_user(email, username, password):
                 return {"status":"success","data":"User registered successfully"}
         exist = get_one_user_by_username(username)
         if exist['status'] == 'success':
-            if exist['data']['is_active'] == True:
+            if exist['data']['is_active']:
                 raise DupicateResourceException()
             else:
                 user = User.query.filter_by(username=username).first()
@@ -174,7 +175,8 @@ def create_user(email, username, password):
         user = User(email=email, username = username,password=password)
         db.session.add(user)
         db.session.commit()
-        return {"status":"success","data":"User registered successfully"}
+        user = User.query.filter_by(email=email).first()
+        return {"status":"success","data":{ "id":user.id,"email":user.email, "username":user.username,"role":user.role}}
     except DupicateResourceException as e:
         return {"status":"failed to add user","error":str(e)}
     except Exception as e:

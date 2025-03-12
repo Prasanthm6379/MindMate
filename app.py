@@ -10,7 +10,6 @@ scheduler = APScheduler()
 db.init_app(app)
 def check_and_trigger_reminders():
     with app.app_context():
-        logger.info("Checking and triggering reminders")
         res = send_remainder()
     return res
 
@@ -33,5 +32,4 @@ if __name__ == '__main__':
         db.create_all()
         # db.drop_all()
         create_admin()
-    logger.info("App is running")
     app.run()
