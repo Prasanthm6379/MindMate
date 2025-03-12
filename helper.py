@@ -12,7 +12,7 @@ def check_password(password=None, hash_password=None):
     return bcrypt.checkpw(password=password, hashed_password=hash_password)
 
 
-def success_response(data=None,status_code=200) -> list:
+def success_response(data=None,status_code=200):
     return jsonify({"status": "success", "data": data, "status_code": status_code}),status_code
 
 

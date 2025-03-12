@@ -1,5 +1,10 @@
 from flask import Blueprint, request
-from user.service import add_remainder, create_user, delete_one_caregiver, delete_one_user, edit_remainder, get_all_caregivers_by_id, get_all_remainders, get_all_remainders_by_id, get_one_caregiver_by_id, get_one_remainder, get_one_user_by_email, login, create_memory_note, get_all_memory_notes, get_one_memory_note_by_id, delete_one_memory_note, add_caregiver, update_caregiver, update_memory_note, update_user
+from user.service import (add_remainder, create_user, delete_one_caregiver, delete_one_remainder, delete_one_user, edit_remainder, 
+                          get_all_caregivers_by_id, get_all_remainders, get_all_remainders_by_id, get_one_caregiver_by_id, get_one_remainder, 
+                          get_one_user_by_email, login, create_memory_note, get_all_memory_notes, get_one_memory_note_by_id, delete_one_memory_note,
+                            add_caregiver, update_caregiver, update_memory_note, update_user, get_all_EmergencyAlert_by_id, get_one_EmergencyAlert,
+                              delete_one_EmergencyAlert, add_EmergencyAlert, edit_EmergencyAlert,edit_ActivityLog,get_all_ActivityLog_by_id, add_ActivityLog,
+                              delete_ActivityLog,get_one_ActivityLog)
 from helper import success_response,failure_response, tokengen
 from flask_jwt_extended import jwt_required
 from config import logger
@@ -192,7 +197,7 @@ def one_caregiver(user_id,id):
         return failure_response(data=caregiver['error'],status_code=caregiver['status_code'])
 
 
-@user.route('/remainder',methods = ['POST','GET','PUT'])
+@user.route('/remainder',methods = ['POST','GET','PUT','DELETE'])
 @jwt_required()
 def remainder():
     try:
@@ -218,6 +223,98 @@ def remainder():
             if rem['status'] == 'success':
                 return success_response(data=rem['data'])
             return failure_response(data=rem['error'],status_code=rem['status_code'])
+        elif request.method == 'DELETE':
+            remainder_id = request.get_json().get('remainder_id')
+            rem = delete_one_remainder(remainder_id)
+            if rem['status'] == 'success':
+                return success_response(data=rem['data'])
+            return failure_response(data=rem['error'],status_code=rem['status_code'])
     except Exception as e:
         logger.error(str(e))
+        return failure_response(data=str(e),status_code=500)
+
+
+@user.route('/emergencyalert',methods=['POST','GET','PUT','DELETE'])
+@jwt_required()
+def emegencyAlert():
+    try:
+        if request.method == 'GET':
+            user_id = request.get_json().get('user_id')
+            alerts = get_all_EmergencyAlert_by_id(user_id)
+            if alerts['status'] == 'success':
+                return success_response(data=alerts['data'])
+            return failure_response(data=alerts['error'],status_code=alerts['status_code'])
+        elif request.method == 'POST':
+            payload = request.get_json()
+            alert = add_EmergencyAlert(id = payload.get('user_id'),caregiver_id = payload.get('caregiver_id'),alert_time = payload.get('alert_time'),location = payload.get('location'),resolved = payload.get('resolved'))
+            if alert['status'] == 'success':
+                return success_response(data=alert['data'])
+            return failure_response(data=alert['error'],status_code=alert['status_code'])
+        elif request.method == 'PUT':
+            payload = request.get_json()
+            alert = edit_EmergencyAlert(id = payload.get('id'),caregiver_id = payload.get('caregiver_id'),alert_time = payload.get('alert_time'),location = payload.get('location'),resolved = payload.get('resolved'))
+            if alert['status'] == 'success':
+                return success_response(data=alert['data'])
+            return failure_response(data=alert['error'],status_code=alert['status_code'])
+        elif request.method == 'DELETE':
+            payload = request.get_json()
+            alert = delete_one_EmergencyAlert(id = payload.get('id'))
+            if alert['status'] == 'success':
+                return success_response(data=alert['data'])
+            return failure_response(data=alert['error'],status_code=alert['status_code'])
+    except Exception as e:
+        return failure_response(data=str(e),status_code=500)
+
+@user.route('/emergencyalert/<id>',methods=['GET'])
+@jwt_required()
+def one_emergency_alert(id):
+    try:
+        alert = get_one_EmergencyAlert(id = id)
+        if alert['status'] == 'success':
+            return success_response(data=alert['data'])
+        return failure_response(data=alert['error'],status_code=alert['status_code'])
+    except Exception as e:
+        return failure_response(data=str(e),status_code=500)
+
+@user.route('/activitylog',methods=['POST','GET','PUT','DELETE'])
+@jwt_required() 
+def activity():
+    try:
+        if request.method == 'GET':
+            user_id = request.get_json().get('user_id')
+            logs = get_all_ActivityLog_by_id(user_id)
+            if logs['status'] == 'success':
+                return success_response(data=logs['data'])
+            return failure_response(data=logs['error'],status_code=logs['status_code'])
+        elif request.method == 'POST':
+            payload = request.get_json()
+            log = add_ActivityLog(id = payload.get('user_id'),activity_type = payload.get('activity_type'),activity_time = payload.get('activity_time'),details = payload.get('details'))
+            if log['status'] == 'success':
+                return success_response(data=log['data'])
+            return failure_response(data=log['error'],status_code=log['status_code'])
+        elif request.method == 'PUT':
+            payload = request.get_json()
+            log = edit_ActivityLog(id = payload.get('id'),activity_type = payload.get('activity_type'),activity_time = payload.get('activity_time'),details = payload.get('details'))
+            if log['status'] == 'success':
+                return success_response(data=log['data'])
+            return failure_response(data=log['error'],status_code=log['status_code'])
+        elif request.method == 'DELETE':
+            payload = request.get_json()
+            log = delete_ActivityLog(id = payload.get('id'))
+            if log['status'] == 'success':
+                return success_response(data=log['data'])
+            return failure_response(data=log['error'],status_code=log['status_code'])
+    except Exception as e:
+        return failure_response(data=str(e),status_code=500)
+
+
+@user.route('/activitylog/<id>',methods=['GET'])
+@jwt_required()
+def one_activity_log(id):
+    try:
+        log = get_one_ActivityLog(id = id)
+        if log['status'] == 'success':
+            return success_response(data=log['data'])
+        return failure_response(data=log['error'],status_code=log['status_code'])
+    except Exception as e:
         return failure_response(data=str(e),status_code=500)

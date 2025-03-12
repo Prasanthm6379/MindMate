@@ -85,6 +85,6 @@ class ActivityLog(db.Model):
     user_id = db.Column(db.String(40), db.ForeignKey('users.id'), nullable=False)
     activity_type = db.Column(db.String(50)) 
     details = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    activity_time = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship('User', back_populates='activity_logs')

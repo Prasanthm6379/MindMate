@@ -3,7 +3,7 @@ import smtplib
 from flask_mail import  Message
 import uuid
 from helper import check_password, encrypt_password
-from models import User, MemoryNote, Caregiver, Reminder
+from models import ActivityLog, EmergencyAlert, User, MemoryNote, Caregiver, Reminder
 from config import db, s3_client, BUCKET, MAIL_PASSWORD, MAIL_USERNAME, MAIL_PORT, MAIL_SERVER
 from werkzeug.exceptions import HTTPException
 from botocore.exceptions import ClientError
@@ -92,6 +92,23 @@ class CaregiverNotFoundException(HTTPException):
 class RemainderNotFoundException(HTTPException):
     code = 404
     description = "Remainder Not Found"
+    def __init__(self, description = None, response = None):
+        if not description:
+            description = self.description
+        super().__init__(description, response)
+
+class EmergencyAlertNotFoundException(HTTPException):
+    code = 404
+    description = "Emergency Alert Not Found"
+    def __init__(self, description = None, response = None):
+        if not description:
+            description = self.description
+        super().__init__(description, response)
+
+
+class ActivityLogNotFoundException(HTTPException):
+    code = 404
+    description = "Activity Log Not Found"
     def __init__(self, description = None, response = None):
         if not description:
             description = self.description
@@ -541,3 +558,163 @@ def send_remainder():
     
     db.session.commit()
     return "Reminders checked and triggered."
+
+def delete_one_remainder(id):
+    try:
+        remainder = Reminder.query.filter_by(id=id).first()
+        if not remainder:
+            raise RemainderNotFoundException()
+        db.session.delete(remainder)
+        db.session.commit()
+        return {"status":"success","data":"Remainder deleted successfully"}
+    except RemainderNotFoundException as e:
+        return {"status":"failed","error":str(e),"status_code":e.code}
+    except Exception as e:
+        return {"status":"failed","error":str(e)}
+
+
+def get_all_EmergencyAlert_by_id(id):
+    try:
+        user = User.query.filter_by(id=id).first()
+        if not user:
+            raise UserNotFoundException()
+        alert = EmergencyAlert.query.filter_by(user_id=id).all()
+        data = []
+        for a in alert:
+            data.append({"id":a.id,"user_id":a.user_id,"caregiver_id":a.caregiver_id,"alert_time":a.alert_time,"location":a.location,"resolved":a.resolved})
+        return {"status":"success","data":data}
+    except UserNotFoundException as e:
+        return {"status":"failed","error":str(e),"status_code":e.code}
+    except Exception as e:
+        return {"status":"failed","error":str(e)}
+
+
+def add_EmergencyAlert(id,caregiver_id,alert_time,location,resolved):
+    try:
+        user = User.query.filter_by(id=id).first()
+        if not user:
+            raise UserNotFoundException()
+        alert = EmergencyAlert(user_id=id,caregiver_id=caregiver_id,alert_time=alert_time,location=location,resolved=resolved)
+        db.session.add(alert)
+        db.session.commit()
+        return {"status":"success","data":"Emergency Alert added successfully"}
+    except UserNotFoundException as e:
+        return {"status":"failed","error":str(e),"status_code":e.code}
+    except Exception as e:
+        return {"status":"failed","error":str(e),"status_code":500}
+
+
+def get_one_EmergencyAlert(id):
+    try:
+        alert = EmergencyAlert.query.filter_by(id=id).first()
+        if not alert:
+            raise EmergencyAlertNotFoundException()
+        return {"status":"success","data":{ "id":alert.id,"user_id":alert.user_id, "caregiver_id":alert.caregiver_id,"alert_time":alert.alert_time,"location":alert.location,"resolved":alert.resolved}}
+    except EmergencyAlertNotFoundException as e:
+        return {"status":"failed","error":str(e),"status_code":e.code}
+    except Exception as e:
+        return {"status":"failed","error":str(e),"status_code":500}
+
+
+def edit_EmergencyAlert(id,caregiver_id,alert_time,location,resolved):
+    try:
+        alert = EmergencyAlert.query.filter_by(id=id).first()
+        if not alert:
+            raise EmergencyAlertNotFoundException()
+        alert.caregiver_id = caregiver_id
+        alert.alert_time = alert_time
+        alert.location = location
+        alert.resolved = resolved
+        db.session.commit()
+        return {"status":"success","data":"Emergency Alert updated successfully"}
+    except EmergencyAlertNotFoundException as e:
+        return {"status":"failed","error":str(e),"status_code":e.code}
+    except Exception as e:
+        return {"status":"failed","error":str(e)}
+    
+
+def delete_one_EmergencyAlert(id):
+    try:
+        alert = EmergencyAlert.query.filter_by(id=id).first()
+        if not alert:
+            raise EmergencyAlertNotFoundException()
+        db.session.delete(alert)
+        db.session.commit()
+        return {"status":"success","data":"Emergency Alert deleted successfully"}
+    except EmergencyAlertNotFoundException as e:
+        return {"status":"failed","error":str(e),"status_code":e.code}
+    except Exception as e:
+        return {"status":"failed","error":str(e)}
+
+
+def get_all_ActivityLog_by_id(id):
+    try:
+        user = User.query.filter_by(id=id).first()
+        if not user:
+            raise UserNotFoundException()
+        activity = ActivityLog.query.filter_by(user_id=id).all()
+        data = []
+        for a in activity:
+            data.append({"id":a.id,"user_id":a.user_id,"details":a.details,"activity_type":a.activity_type,"activity_time":a.activity_time})
+        return {"status":"success","data":data}
+    except UserNotFoundException as e:
+        return {"status":"failed","error":str(e),"status_code":e.code}
+    except Exception as e:
+        return {"status":"failed","error":str(e)}
+
+
+def add_ActivityLog(id,activity_type,details,activity_time):
+    try:
+        user = User.query.filter_by(id=id).first()
+        if not user:
+            raise UserNotFoundException()
+        activity = ActivityLog(user_id=id,activity_type=activity_type,details=details,activity_time=activity_time)
+        db.session.add(activity)
+        db.session.commit()
+        return {"status":"success","data":"Activity Log added successfully"}
+    except UserNotFoundException as e:
+        return {"status":"failed","error":str(e),"status_code":e.code}
+    except Exception as e:
+        return {"status":"failed","error":str(e),"status_code":500}
+
+
+def edit_ActivityLog(id,activity_type,details,activity_time):
+    try:
+        activity = ActivityLog.query.filter_by(id=id).first()
+        if not activity:
+            raise ActivityLogNotFoundException()
+        activity.activity_type = activity_type
+        activity.details = details
+        activity.activity_time = activity_time
+        db.session.commit()
+        return {"status":"success","data":"Activity Log updated successfully"}
+    except ActivityLogNotFoundException as e:
+        return {"status":"failed","error":str(e),"status_code":e.code}
+    except Exception as e:
+        return {"status":"failed","error":str(e)}
+
+
+def get_one_ActivityLog(id):
+    try:
+        activity = ActivityLog.query.filter_by(id=id).first()
+        if not activity:
+            raise ActivityLogNotFoundException()
+        return {"status":"success","data":{ "id":activity.id,"user_id":activity.user_id, "details":activity.details,"activity_type":activity.activity_type,"activity_time":activity.activity_time}}
+    except ActivityLogNotFoundException as e:
+        return {"status":"failed","error":str(e),"status_code":e.code}
+    except Exception as e:
+        return {"status":"failed","error":str(e)}
+
+
+def delete_ActivityLog(id):
+    try:
+        activity = ActivityLog.query.filter_by(id=id).first()
+        if not activity:
+            raise ActivityLogNotFoundException()
+        db.session.delete(activity)
+        db.session.commit()
+        return {"status":"success","data":"Activity Log deleted successfully"}
+    except ActivityLogNotFoundException as e:
+        return {"status":"failed","error":str(e),"status_code":e.code}
+    except Exception as e:
+        return {"status":"failed","error":str(e)}
