@@ -95,10 +95,12 @@ def login_user():
 @jwt_required()
 def memory_note(id):
     if request.method == 'GET':
+        print(id)
         note = get_all_memory_notes(id)
         if note['status'] == 'success':
-            logger.info("Note retrived Successfully")
-            return success_response(data=note['data'])
+            logger.info("Notes retrived Successfully")
+            print(note['data'])
+            return note['data']
         logger.error(note['error'])
         return failure_response(data=note['error'],status_code=404)
     elif request.method == 'POST':
@@ -157,12 +159,12 @@ def get_memory_note_by_id(user_id,id):
 
 
 
-@user.route('/caregiver',methods=['POST','GET','PUT'])
+@user.route('/caregiver/<user_id>',methods=['POST','GET','PUT'])
 @jwt_required()
-def caregiver():
+def caregiver(user_id):
     if request.method == 'GET':
-        id = request.get_json().get('id')
-        data = get_all_caregivers_by_id(id)
+        # id = request.get_json().get('id')
+        data = get_all_caregivers_by_id(user_id)
         if data['status'] == 'failed':
             return failure_response(data=data['error'],status_code=data['status_code'])
         return success_response(data=data['data'])
@@ -174,7 +176,7 @@ def caregiver():
         return failure_response(data=caregiver['error'],status_code=caregiver['status_code'])
     elif request.method == 'POST':
         payload = request.get_json()
-        care = add_caregiver(id = payload.get('id'),name = payload.get('name'),phone = payload.get('phone'),email = payload.get('email'),relationship = payload.get('relationship'),emergency_contact = payload.get('emergency_contact'))
+        care = add_caregiver(id = payload.get('user_id'),name = payload.get('name'),phone = payload.get('phone'),email = payload.get('email'),relationship = payload.get('relationship'),emergency_contact = payload.get('emergency_contact'))
         if care['status'] == 'failed':
             return failure_response(data=care['error'],status_code=care['status_code'])
         return success_response(data=care['data'])
@@ -196,24 +198,26 @@ def one_caregiver(user_id,id):
         return failure_response(data=caregiver['error'],status_code=caregiver['status_code'])
 
 
-@user.route('/remainder',methods = ['POST','GET','PUT','DELETE'])
+@user.route('/remainder/<user_id>',methods = ['POST','GET','PUT','DELETE'])
 @jwt_required()
-def remainder():
+def remainder(user_id):
     try:
         if request.method == 'POST':
             payload = request.get_json()
             rem = add_remainder(id = payload.get('user_id'),title = payload.get('title'),description = payload.get('description'),reminder_time = payload.get('reminder_time'),repeat_interval = payload.get('repeat_interval'),reminder_type = payload.get('reminder_type'),status = payload.get('status'))
             if rem['status'] == 'success':
                 logger.info(rem['data'])
-                return success_response(data=rem['data'])
+                print(rem['data'])
+                return rem['data']
             logger.error(rem['error'])
             return failure_response(data=rem['error'],status_code=rem['status_code'])
         elif request.method == 'GET':
-            user_id = request.get_json().get('user_id')
+            # user_id = request.get_json().get('user_id')
             remainders = get_all_remainders_by_id(user_id)
             if remainders['status'] == 'success':
                 logger.info("Remainders retrived successfully")
-                return success_response(data=remainders)
+                print(remainders.get("data"))
+                return remainders.get('data')
             logger.error(remainders['error'])
             return failure_response(data=remainders['error'],status_code=remainders['status_code'])
         elif request.method == 'PUT':
@@ -245,12 +249,12 @@ def one_remainder(id):
         return failure_response(data=str(e),status_code=500)
 
 
-@user.route('/emergencyalert',methods=['POST','GET','PUT','DELETE'])
+@user.route('/emergencyalert/<user_id>',methods=['POST','GET','PUT','DELETE'])
 @jwt_required()
-def emegencyAlert():
+def emegencyAlert(user_id):
     try:
         if request.method == 'GET':
-            user_id = request.get_json().get('user_id')
+            # user_id = request.get_json().get('user_id')
             alerts = get_all_EmergencyAlert_by_id(user_id)
             if alerts['status'] == 'success':
                 return success_response(data=alerts['data'])
@@ -287,12 +291,12 @@ def one_emergency_alert(id):
     except Exception as e:
         return failure_response(data=str(e),status_code=500)
 
-@user.route('/activitylog',methods=['POST','GET','PUT','DELETE'])
+@user.route('/activitylog/<user_id>',methods=['POST','GET','PUT','DELETE'])
 @jwt_required() 
-def activity():
+def activity(user_id):
     try:
         if request.method == 'GET':
-            user_id = request.get_json().get('user_id')
+            # user_id = request.get_json().get('user_id')
             logs = get_all_ActivityLog_by_id(user_id)
             if logs['status'] == 'success':
                 return success_response(data=logs['data'])
@@ -316,16 +320,18 @@ def activity():
                 return success_response(data=log['data'])
             return failure_response(data=log['error'],status_code=log['status_code'])
     except Exception as e:
+        # print(request.get_json())
+        logger.error(str(e))
         return failure_response(data=str(e),status_code=500)
 
 
-@user.route('/activitylog/<id>',methods=['GET'])
-@jwt_required()
-def one_activity_log(id):
-    try:
-        log = get_one_ActivityLog(id = id)
-        if log['status'] == 'success':
-            return success_response(data=log['data'])
-        return failure_response(data=log['error'],status_code=log['status_code'])
-    except Exception as e:
-        return failure_response(data=str(e),status_code=500)
+# @user.route('/activitylog/<id>',methods=['GET'])
+# @jwt_required()
+# def one_activity_log(id):
+#     try:
+#         log = get_one_ActivityLog(id = id)
+#         if log['status'] == 'success':
+#             return success_response(data=log['data'])
+#         return failure_response(data=log['error'],status_code=log['status_code'])
+#     except Exception as e:
+#         return failure_response(data=str(e),status_code=500)

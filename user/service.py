@@ -219,7 +219,8 @@ def login(email,password):
         hash_password = hash_password.encode('utf8')
         if password and hash_password:
             if check_password(password = password, hash_password=hash_password):
-                return {"status":"success","data":{"message":"User logged in successfully"}}
+                user = User.query.filter_by(email=email).first()
+                return {"status":"success","data":{"message":"User logged in successfully","user_id":user.id}}
             raise InvalidPasswordException()
         raise UserNotFoundException()
     except InvalidPasswordException as e:
@@ -308,6 +309,7 @@ def get_all_memory_notes(id):
                 data.append({"id":note.id,"title":note.title,"note_type":note.note_type,"content":f"https://{BUCKET}.s3.amazonaws.com/{note.content}","file_name":note.content.split('_')[-1]})
             else:
                 data.append({"id":note.id,"title":note.title,"note_type":note.note_type,"content":note.content})
+        print(data)
         return {"status":"success","data":data}
     except InvalidUserIdException as e:
         return {"status":"failed","error":str(e)}
@@ -593,6 +595,7 @@ def add_EmergencyAlert(id,caregiver_id,alert_time,location,resolved):
         user = User.query.filter_by(id=id).first()
         if not user:
             raise UserNotFoundException()
+        location = str(location)
         alert = EmergencyAlert(user_id=id,caregiver_id=caregiver_id,alert_time=alert_time,location=location,resolved=resolved)
         db.session.add(alert)
         db.session.commit()

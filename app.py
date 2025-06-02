@@ -23,8 +23,8 @@ def create_admin():
         logger.info("Admin created successfully")
 
 
-scheduler.add_job(id="reminder_task", func=check_and_trigger_reminders, trigger="interval", seconds=60)
-scheduler.start()
+# scheduler.add_job(id="reminder_task", func=check_and_trigger_reminders, trigger="interval", seconds=60)
+# scheduler.start()
 
 
 if __name__ == '__main__':
