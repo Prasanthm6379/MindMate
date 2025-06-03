@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14.1
+    restart: always
+    container_name: db
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=mindmate
+
+  flask:
+    build: .
+    container_name: flask
+    volumes:
+      - .:/code
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./Frontend/mind-mate
+    ports:
+      - "3000:80"
+    container_name: react-frontend
+    depends_on:
+      - flask
+    restart: unless-stopped
+
+volumes:
+  db:
+    driver: local

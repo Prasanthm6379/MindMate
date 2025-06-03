@@ -8,6 +8,9 @@ export default function Navigation() {
                 <Link to="/dashboard" className="p-2 hover:bg-blue-700 rounded-lg">
                     🏠 Home
                 </Link>
+                <Link to = "/dashboard/memorynotes" className="p-2 hover:bg-blue-700 rounded-lg">
+                    📝 Memory Notes
+                </Link>
                 <Link to="/dashboard/alerts" className="p-2 hover:bg-blue-700 rounded-lg">
                     🚨 Alerts
                 </Link>
@@ -20,6 +23,7 @@ export default function Navigation() {
                 <Link to="/dashboard/caregivers" className="p-2 hover:bg-blue-700 rounded-lg">
                     👪 Caregivers
                 </Link>
+                <Link to="/" className='p-2 hover:bg-blue-700 rounded-lg' >Log Out</Link>
             </div>
         </nav>
     );

@@ -32,4 +32,4 @@ if __name__ == '__main__':
         db.create_all()
         # db.drop_all()
         create_admin()
-    app.run()
+    app.run(host=app.config.get('HOST'), port=app.config.get('PORT'), debug=app.config.get('DEBUG'))

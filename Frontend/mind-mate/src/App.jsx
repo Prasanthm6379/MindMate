@@ -2,6 +2,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Login from './components/Login';
+import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import Navigation from './components/Navigation';
 import MemoryNotes from './components/MemoryNotes';
@@ -20,6 +21,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route
           path="/dashboard"
           element={
@@ -30,13 +32,63 @@ export default function App() {
               </div>
             </ProtectedRoute>
           }
-        >
-          <Route index element={<MemoryNotes />} />
-          <Route path="alerts" element={<EmergencyAlerts />} />
-          <Route path="activities" element={<Activities />} />
-          <Route path="reminders" element={<Reminders />} />
-          <Route path="caregivers" element={<Caregivers />} />
-        </Route>
+        />
+        <Route
+          path="/dashboard/alerts"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-50 pb-20">
+                <EmergencyAlerts />
+                <Navigation />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+                <Route
+          path="/dashboard/memorynotes"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-50 pb-20">
+                <MemoryNotes />
+                <Navigation />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/activities"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-50 pb-20">
+                <Activities />
+                <Navigation />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/reminders"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-50 pb-20">
+                <Reminders />
+                <Navigation />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/caregivers"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-gray-50 pb-20">
+                <Caregivers />
+                <Navigation />
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

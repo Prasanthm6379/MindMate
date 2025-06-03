@@ -78,6 +78,7 @@ def login_user():
         payload = request.get_json()
         email = payload.get('email').lower()
         password = payload.get('password')
+        print(email,password)
         user = login(email,password)
         if user['status'] == 'success':
             token_ = tokengen(email)
