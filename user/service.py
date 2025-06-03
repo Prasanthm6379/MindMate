@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 import smtplib
-from flask_mail import  Message
 import uuid
 from helper import check_password, encrypt_password
 from models import ActivityLog, EmergencyAlert, User, MemoryNote, Caregiver, Reminder
@@ -134,7 +133,7 @@ def get_one_user_by_username(username):
     try:
         user = User.query.filter_by(username = username).first()
         if user:
-            return {"status":"success","data":{ "id":user.id,"email":user.email, "username":user.username,"role":user.role}}  
+            return {"status":"success","data":{ "id":user.id,"email":user.email, "username":user.username,"role":user.role, "is_active":user.is_active}}  
         else:
             raise UserNotFoundException()
     except UserNotFoundException as e:
@@ -162,7 +161,7 @@ def create_user(email, username, password):
                 return {"status":"success","data":"User registered successfully"}
         exist = get_one_user_by_username(username)
         if exist['status'] == 'success':
-            if exist['data']['is_active'] == True:
+            if exist['data']['is_active']:
                 raise DupicateResourceException()
             else:
                 user = User.query.filter_by(username=username).first()
@@ -174,7 +173,8 @@ def create_user(email, username, password):
         user = User(email=email, username = username,password=password)
         db.session.add(user)
         db.session.commit()
-        return {"status":"success","data":"User registered successfully"}
+        user = User.query.filter_by(email=email).first()
+        return {"status":"success","data":{ "id":user.id,"email":user.email, "username":user.username,"role":user.role}}
     except DupicateResourceException as e:
         return {"status":"failed to add user","error":str(e)}
     except Exception as e:
@@ -219,7 +219,8 @@ def login(email,password):
         hash_password = hash_password.encode('utf8')
         if password and hash_password:
             if check_password(password = password, hash_password=hash_password):
-                return {"status":"success","data":{"message":"User logged in successfully"}}
+                user = User.query.filter_by(email=email).first()
+                return {"status":"success","data":{"message":"User logged in successfully","user_id":user.id}}
             raise InvalidPasswordException()
         raise UserNotFoundException()
     except InvalidPasswordException as e:
@@ -308,6 +309,7 @@ def get_all_memory_notes(id):
                 data.append({"id":note.id,"title":note.title,"note_type":note.note_type,"content":f"https://{BUCKET}.s3.amazonaws.com/{note.content}","file_name":note.content.split('_')[-1]})
             else:
                 data.append({"id":note.id,"title":note.title,"note_type":note.note_type,"content":note.content})
+        print(data)
         return {"status":"success","data":data}
     except InvalidUserIdException as e:
         return {"status":"failed","error":str(e)}
@@ -501,7 +503,6 @@ def edit_remainder(id,remainder_type,status,title,description,remainder_time,rep
         remainder.reminder_time = remainder_time
         remainder.repeat_interval = repeat_interval
         db.session.commit()
-        print('remainder updated    ')
         return {"status":"success","data":"Remainder updated successfully"}
     except RemainderNotFoundException as e:
         return {"status":"failed","error":str(e),'status_code':e.code}
@@ -594,6 +595,7 @@ def add_EmergencyAlert(id,caregiver_id,alert_time,location,resolved):
         user = User.query.filter_by(id=id).first()
         if not user:
             raise UserNotFoundException()
+        location = str(location)
         alert = EmergencyAlert(user_id=id,caregiver_id=caregiver_id,alert_time=alert_time,location=location,resolved=resolved)
         db.session.add(alert)
         db.session.commit()

@@ -10,7 +10,6 @@ scheduler = APScheduler()
 db.init_app(app)
 def check_and_trigger_reminders():
     with app.app_context():
-        logger.info("Checking and triggering reminders")
         res = send_remainder()
     return res
 
@@ -24,8 +23,8 @@ def create_admin():
         logger.info("Admin created successfully")
 
 
-scheduler.add_job(id="reminder_task", func=check_and_trigger_reminders, trigger="interval", seconds=60)
-scheduler.start()
+# scheduler.add_job(id="reminder_task", func=check_and_trigger_reminders, trigger="interval", seconds=60)
+# scheduler.start()
 
 
 if __name__ == '__main__':
@@ -33,5 +32,4 @@ if __name__ == '__main__':
         db.create_all()
         # db.drop_all()
         create_admin()
-    logger.info("App is running")
-    app.run()
+    app.run(host=app.config.get('HOST'), port=app.config.get('PORT'), debug=app.config.get('DEBUG'))
