@@ -1,16 +1,19 @@
 # MindMate 🧠💙
 
-A comprehensive digital companion application designed to support Alzheimer's patients and their caregivers in managing daily life, health monitoring, and emergency situations.
+A comprehensive full-stack digital companion application designed to support Alzheimer's patients and their caregivers in managing daily life, health monitoring, and emergency situations.
 
 ## 📋 Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
+- [Architecture](#architecture)
+- [Frontend Components](#frontend-components)
 - [API Endpoints](#api-endpoints)
 - [Getting Started](#getting-started)
 - [Authentication](#authentication)
 - [Usage Examples](#usage-examples)
 - [Technology Stack](#technology-stack)
+- [Project Structure](#project-structure)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -24,6 +27,22 @@ MindMate is a specialized application that addresses the unique challenges faced
 - **Health Tracking**: Activity logging and medication reminders
 - **Caregiver Coordination**: Multi-caregiver support with emergency contacts
 - **Independence**: Helping patients maintain autonomy while staying safe
+
+## 🏗 Architecture
+
+MindMate is built as a modern full-stack application:
+
+### Frontend (React.js)
+- **Single Page Application (SPA)** with React 18+
+- **Context API** for state management and authentication
+- **Component-based architecture** for reusable UI elements
+- **Responsive design** for mobile and desktop compatibility
+
+### Backend (Flask API)
+- **RESTful API** with Flask framework
+- **JWT authentication** for secure user sessions
+- **Database integration** with SQLAlchemy ORM
+- **CORS enabled** for frontend-backend communication
 
 ## ✨ Features
 
@@ -62,6 +81,23 @@ MindMate is a specialized application that addresses the unique challenges faced
 - **Recurring Reminders**: Weekly, daily, or custom repeat intervals
 - **Categorized Reminders**: Health, personal, and social reminder types
 - **Status Tracking**: Mark reminders as completed or pending
+
+## 🎨 Frontend Components
+
+### Core Components
+- **📱 Dashboard**: Central hub displaying overview of all user activities and alerts
+- **🔐 Login/Register**: User authentication and account creation interface
+- **📝 MemoryNotes**: Create, edit, and manage digital memory aids
+- **👥 Caregivers**: Manage caregiver network and emergency contacts
+- **🚨 EmergencyAlerts**: View and manage emergency alert system
+- **📊 Activities**: Log and track daily activities and health metrics
+- **⏰ Reminders**: Set up and manage medication and appointment reminders
+- **🧭 Navigation**: Intuitive navigation between different app sections
+
+### Supporting Architecture
+- **🔐 AuthContext**: Global authentication state management
+- **🌐 API Service**: Centralized API communication layer
+- **📱 Responsive Design**: Mobile-first, accessible user interface
 
 ## 🔌 API Endpoints
 
@@ -126,12 +162,20 @@ DELETE /user/remainder                  # Delete reminder
 ## 🚀 Getting Started
 
 ### Prerequisites
+**Backend Requirements:**
 - Python 3.8+
 - Flask framework
 - JWT authentication library
 - Database system (SQLite/PostgreSQL/MySQL)
 
+**Frontend Requirements:**
+- Node.js 16+
+- npm or yarn package manager
+- Modern web browser
+
 ### Installation
+
+#### Backend Setup
 
 1. **Clone the repository**
    ```bash
@@ -139,12 +183,13 @@ DELETE /user/remainder                  # Delete reminder
    cd mindmate
    ```
 
-2. **Install dependencies**
+2. **Set up backend**
    ```bash
+   cd backend
    pip install -r requirements.txt
    ```
 
-3. **Set up environment variables**
+3. **Configure environment variables**
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
@@ -155,12 +200,45 @@ DELETE /user/remainder                  # Delete reminder
    python init_db.py
    ```
 
-5. **Run the application**
+5. **Start the Flask API**
    ```bash
    python app.py
    ```
+   API will be available at `http://localhost:5000`
 
-The API will be available at `http://localhost:5000`
+#### Frontend Setup
+
+1. **Navigate to frontend directory**
+   ```bash
+   cd Frontend/mind-mate
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. **Configure API endpoint**
+   ```bash
+   # Create .env file in frontend directory
+   echo "REACT_APP_API_URL=http://localhost:5000" > .env
+   ```
+
+4. **Start the React application**
+   ```bash
+   npm start
+   # or
+   yarn start
+   ```
+   Frontend will be available at `http://localhost:3000`
+
+### Quick Start
+1. Start the backend server on port 5000
+2. Start the frontend development server on port 3000
+3. Navigate to `http://localhost:3000` in your browser
+4. Create a new account or login with existing credentials
 
 ## 🔐 Authentication
 
@@ -225,12 +303,64 @@ curl -X POST http://localhost:5000/user/remainder \
 
 ## 🛠 Technology Stack
 
-- **Backend Framework**: Flask (Python)
-- **Authentication**: JWT (JSON Web Tokens)
-- **Database**: SQLite/PostgreSQL/MySQL (configurable)
-- **API Architecture**: RESTful API
-- **Security**: Bearer token authentication
-- **Data Format**: JSON
+### Frontend
+- **React.js 18+**: Modern JavaScript library for building user interfaces
+- **React Context API**: State management for authentication and global state
+- **CSS3**: Styling and responsive design
+- **JavaScript ES6+**: Modern JavaScript features
+- **Fetch API**: HTTP client for API communication
+
+### Backend
+- **Flask**: Lightweight Python web framework
+- **Flask-JWT-Extended**: JWT token authentication
+- **SQLAlchemy**: Python SQL toolkit and ORM
+- **Flask-CORS**: Cross-Origin Resource Sharing support
+- **Python 3.8+**: Backend programming language
+
+### Database
+- **SQLite/PostgreSQL/MySQL**: Configurable database options
+
+### Development Tools
+- **Node.js & npm**: Frontend package management
+- **Postman**: API testing and documentation
+- **Git**: Version control
+
+## 📁 Project Structure
+
+```
+MindMate/
+├── Backend/                    # Flask API backend
+│   ├── app.py                 # Main Flask application
+│   ├── models/                # Database models
+│   ├── routes/                # API route handlers
+│   ├── config.py              # Configuration settings
+│   └── requirements.txt       # Python dependencies
+│
+├── Frontend/mind-mate/        # React frontend
+│   ├── public/                # Static assets
+│   ├── src/
+│   │   ├── components/        # React components
+│   │   │   ├── Dashboard.jsx      # Main dashboard
+│   │   │   ├── Login.jsx          # Authentication
+│   │   │   ├── Register.jsx       # User registration
+│   │   │   ├── MemoryNotes.jsx    # Memory management
+│   │   │   ├── Caregivers.jsx     # Caregiver management
+│   │   │   ├── EmergencyAlerts.jsx # Emergency system
+│   │   │   ├── Activities.jsx     # Activity tracking
+│   │   │   ├── Reminders.jsx      # Reminder system
+│   │   │   └── Navigation.jsx     # App navigation
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx    # Authentication context
+│   │   ├── services/
+│   │   │   └── api.jsx            # API service layer
+│   │   ├── App.jsx            # Main React component
+│   │   └── index.js           # React entry point
+│   ├── package.json           # Node.js dependencies
+│   └── .env                   # Environment variables
+│
+├── README.md                  # Project documentation
+└── .gitignore                # Git ignore file
+```
 
 ## 🤝 Contributing
 
@@ -239,41 +369,27 @@ We welcome contributions to MindMate! Here's how you can help:
 ### Development Setup
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Make your changes
-4. Add tests for new functionality
-5. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-6. Push to the branch (`git push origin feature/AmazingFeature`)
-7. Open a Pull Request
+3. Set up both frontend and backend development environments
+4. Make your changes
+5. Add tests for new functionality
+6. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+7. Push to the branch (`git push origin feature/AmazingFeature`)
+8. Open a Pull Request
 
 ### Contribution Guidelines
-- Follow PEP 8 style guidelines for Python code
+- **Frontend**: Follow React best practices and ESLint rules
+- **Backend**: Follow PEP 8 style guidelines for Python code
 - Add unit tests for new features
 - Update documentation for API changes
 - Ensure all tests pass before submitting PR
 - Write clear, descriptive commit messages
+- Test both frontend and backend integration
 
 ### Reporting Issues
 - Use GitHub Issues to report bugs
 - Include detailed reproduction steps
 - Provide system information and error logs
 - Use appropriate issue labels
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-For support and questions:
-- 📧 Email: support@mindmate.app
-- 💬 GitHub Issues: [Create an issue](https://github.com/yourusername/mindmate/issues)
-- 📚 Documentation: [Wiki](https://github.com/yourusername/mindmate/wiki)
-
-## 🙏 Acknowledgments
-
-- Healthcare professionals who provided insights into Alzheimer's care
-- Caregivers and families who shared their experiences
-- Open source community for the tools and libraries used
 
 ---
 
